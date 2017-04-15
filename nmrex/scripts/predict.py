@@ -20,11 +20,14 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('db', metavar='PATH', type=str,
-                        help='path data base')
+                        help='path to data base')
+
+    parser.add_argument('-p', metavar='N', type=int, dest='proc', default=1,
+                        help='number of processes')
 
     args = parser.parse_args()
 
-    nmrex.db.apply(predict, os.path.expanduser(args.db))
+    nmrex.db.apply(predict, os.path.expanduser(args.db), proc=args.proc)
 
 
 if __name__ == '__main__':
