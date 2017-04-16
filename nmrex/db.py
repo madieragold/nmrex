@@ -6,6 +6,17 @@ from functools import partial
 
 
 def fetch(path, df):
+    """Fetch new data base according to specified list of entries.
+    
+    Parameters
+    ----------
+    path : str
+        Path to location of the new data base.
+    df : pandas.DataFrame
+        Data frame with columns `RCSB` and `BMRB` specifying entries for the
+        new data base.
+
+    """
     nmrex.utils.mkdir(path)
     with nmrex.utils.chdir(path):
         total = len(df)
@@ -56,6 +67,19 @@ def fetch(path, df):
 
 
 def get_items(path):
+    """Get paths to all entries in the data base.
+    
+    Parameters
+    ----------
+    path : str
+        Path to data base.
+
+    Returns
+    -------
+    list
+        List of paths.
+
+    """
     path = os.path.expanduser(path)
     ps = [os.path.join(path, n)
           for n in os.listdir(path)
@@ -87,8 +111,28 @@ def _apply(func, total, index, path):
 
 
 def apply(func, path, proc=1):
+    """Apply a function to each entry in the data base.
+    
+    Parameters
+    ----------
+    func : callable
+        Function to apply.
+    path : str
+        Path to data base,
+    proc : int
+        Number of processes to run application in. Default is 1. If less than
+        1, `proc` is set to the number of cores.
+
+    Returns
+    -------
+    list
+        Results of application.
+
+    """
     peps = get_items(path)
     total = len(peps)
+    if proc < 1:
+        proc = os.cpu_count()
     proc = min(total, proc)
     with mp.Pool(proc) as pool:
         return pool.starmap(partial(_apply, func, total), enumerate(peps, 1))
