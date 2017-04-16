@@ -15,6 +15,16 @@ def structure(name='peptide'):
 
 
 def header(name='peptide'):
+    """
+    
+    Parameters
+    ----------
+    name
+
+    Returns
+    -------
+
+    """
 
     with open('{}.pdb'.format(name), 'r') as f:
         file = f.read()
