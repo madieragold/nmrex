@@ -10,11 +10,21 @@ def structure(name='peptide'):
 
 
 def header(name='peptide'):
-    file = '{}.pdb'.format(name)
-    file = open(file, 'r')
-    lines = file.read()
-    file.close()
-    return lines[:lines.find('\nMODEL')] + '\n'
+
+    with open('{}.pdb'.format(name), 'r') as f:
+        file = f.read()
+
+    model = file.find('\nMODEL')
+    atom = file.find('\nATOM')
+
+    if atom < 0:
+        raise ValueError('no ATOM entries found in PDB')
+    if model < 0:
+        index = atom
+    else:
+        index = min(model, atom)
+
+    return file[:index] + '\n'
 
 
 def save_structure(struct, name):

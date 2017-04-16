@@ -89,5 +89,6 @@ def _apply(func, total, index, path):
 def apply(func, path, proc=1):
     peps = get_items(path)
     total = len(peps)
+    proc = min(total, proc)
     with mp.Pool(proc) as pool:
         return pool.starmap(partial(_apply, func, total), enumerate(peps, 1))
