@@ -69,3 +69,28 @@ def sparta_plus(pdb, path='~/tools/SPARTA+', silent=True):
     os.remove('struct.tab')
 
     return rv
+
+
+PYTHON26 = '/System/Library/Frameworks/Python.framework/Versions/2.6/bin/'
+
+
+def shiftx2(pdb, path='~/tools/SHIFTX2', silent=True, python26=PYTHON26):
+
+    command = '''
+    PREV=$PATH
+    export PATH={python26}:$PATH
+    python {script} -i {pdb} {silent}
+    mv {pdb}.cs {output}
+    export PATH=$PREV
+    '''.format(
+        script=os.path.join(os.path.expanduser(path), 'shiftx2.py'),
+        pdb=pdb,
+        output=os.path.join('prediction/shiftx2', pdb),
+        python26=python26,
+        silent='&> /dev/null' if silent else '',
+    )
+
+    mkdir('prediction/shiftx2')
+    rv = os.system(command)
+
+    return rv
