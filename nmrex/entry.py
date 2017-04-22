@@ -146,3 +146,46 @@ def ppm_one(name='peptide'):
         df.set_index(['RESID', 'RESNAME'], inplace=True)
 
         return df
+
+
+def shiftx2(name='peptide'):
+    path = os.path.join('prediction/shiftx2', name + '.pdb')
+    df = pd.read_csv(path)
+    df.loc[df['RES'] == 'B', 'RES'] = 'C'
+    df.rename(columns={'NUM':'RESID','RES':'RESNAME'}, inplace=True)
+    df = df.pivot_table(
+        index=['RESID', 'RESNAME'],
+        values='SHIFT',
+        columns='ATOMNAME',
+    )
+    df.columns.name = None
+    return df
+
+
+def sparta_plus(name='peptide'):
+    fpath = os.path.join('prediction/sparta+', name + '.pdb')
+
+    with open(fpath, 'r') as f:
+        ss = filter(lambda s: not (
+                    s.startswith('REMARK') or
+                    s.startswith('DATA') or
+                    s.startswith('VARS') or
+                    s.startswith('FORMAT')
+        ), f)
+        ss = io.StringIO(''.join(list(ss)))
+
+    tox = pd.read_table(ss, delim_whitespace=True, header=None,
+                        names=['RESID' ,'RESNAME', 'ATOMNAME', 'SS_SHIFT' ,
+                               'SHIFT', 'RC_SHIFT' ,'HM_SHIFT', 'EF_SHIFT',
+                               'SIGMA'])
+
+    tox['RESNAME'] = tox['RESNAME'].map(lambda s: s.upper())
+    tox = tox.groupby(['RESID', 'RESNAME']) \
+        .apply(
+            lambda df: pd.DataFrame(data=df['SHIFT'].values[np.newaxis, :],
+                                    columns=df['ATOMNAME'])) \
+        .reset_index() \
+        .drop('level_2', axis=1)
+    tox.set_index(['RESID', 'RESNAME'], inplace=True)
+
+    return tox
