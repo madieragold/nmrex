@@ -14,6 +14,30 @@ def structure(name='peptide'):
     return parser.get_structure(fname(os.getcwd()), file)
 
 
+def ssbonds(full=False):
+    with open('peptide.pdb', 'r') as f:
+        res = [l for l in f if l.startswith('SSBOND')]
+        ssblines = io.StringIO(''.join(res))
+        if full:
+            df = pd.read_table(
+                ssblines,
+                delim_whitespace=True,
+                usecols=[2,4,5,7],
+                names=['RESNAME1', 'RESID1', 'RESNAME2', 'RESID2']
+            )
+            to_letter(df, 'RESNAME1')
+            to_letter(df, 'RESNAME2')
+            return df
+        else:
+            df = pd.read_table(
+                ssblines,
+                delim_whitespace=True,
+                usecols=[4,7],
+                names=['A', 'B']
+            )
+            return pd.concat([df['A'], df['B']]).tolist()
+
+
 def header(name='peptide'):
     """
     
