@@ -66,7 +66,7 @@ def fetch(path, df):
                     )
 
 
-def get_items(path):
+def get_items(path, only=None):
     """Get paths to all entries in the data base.
     
     Parameters
@@ -84,7 +84,10 @@ def get_items(path):
     ps = [os.path.join(path, n)
           for n in os.listdir(path)
           if not n.startswith('.') and len(n) == 4]
-    return [p for p in ps if os.path.isdir(p)]
+    ps = [p for p in ps if os.path.isdir(p)]
+    if only is not None:
+        ps = [p for p in ps if nmrex.utils.fname(p) in only]
+    return ps
 
 
 def _apply(func, total, index, path):
