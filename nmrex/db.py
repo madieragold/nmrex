@@ -113,7 +113,7 @@ def _apply(func, total, index, path):
             return None
 
 
-def apply(func, path, proc=1):
+def apply(func, path, proc=1, only=None):
     """Apply a function to each entry in the data base.
     
     Parameters
@@ -132,7 +132,7 @@ def apply(func, path, proc=1):
         Results of application.
 
     """
-    peps = get_items(path)
+    peps = get_items(path, only=only)
     total = len(peps)
     if proc < 1:
         proc = os.cpu_count()
