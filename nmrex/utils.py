@@ -55,3 +55,7 @@ def fname(path):
     if path[-1] == '/':
         path = path[:-1]
     return os.path.split(path)[1]
+
+
+def subtract(df1, df2):
+    return (df1 - df2).dropna(axis=1, how='all')
